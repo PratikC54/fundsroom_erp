@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { asyncHandler } from "../lib/http.js";
+import { allowRoles } from "../middleware/auth.js";
+import * as controller from "../controllers/quotations.controller.js";
+const router = Router();
+router.get("/", asyncHandler(controller.getQuotations));
+router.get("/:id", asyncHandler(controller.getQuotation));
+router.post("/", allowRoles("SALES"), asyncHandler(controller.addQuotation));
+router.patch("/:id/status", asyncHandler(controller.updateQuotationStatus));
+router.post("/:id/convert", allowRoles("SALES"), asyncHandler(controller.convertQuotation));
+export default router;
