@@ -1,0 +1,10 @@
+import { Router } from "express";
+import { asyncHandler } from "../lib/http.js";
+import { allowRoles } from "../middleware/auth.js";
+import * as controller from "../controllers/sales-orders.controller.js";
+const router = Router();
+router.get("/", asyncHandler(controller.getSalesOrders));
+router.get("/:id", asyncHandler(controller.getSalesOrder));
+router.post("/:id/confirm", allowRoles("ADMIN"), asyncHandler(controller.confirmOrder));
+router.post("/:id/dispatch", allowRoles("ADMIN"), asyncHandler(controller.dispatchOrder));
+export default router;
