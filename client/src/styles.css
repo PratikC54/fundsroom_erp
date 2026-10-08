@@ -289,6 +289,30 @@ select {
   color: #555;
   font-size: 13px;
 }
+.enquiry-items {
+  grid-column: 1/-1;
+  display: grid;
+  gap: 12px;
+}
+.enquiry-items-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.enquiry-items-head h3 {
+  margin: 0;
+}
+.enquiry-item {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(110px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.enquiry-item button {
+  height: 38px;
+}
 .inventory-strip {
   margin-top: 24px;
 }
@@ -421,6 +445,12 @@ select {
   }
   .inline-fields {
     grid-template-columns: 1fr;
+  }
+  .enquiry-item {
+    grid-template-columns: 1fr;
+  }
+  .enquiry-item button {
+    justify-self: end;
   }
   .page-head {
     align-items: start;
