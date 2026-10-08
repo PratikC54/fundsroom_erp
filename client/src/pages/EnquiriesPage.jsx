@@ -8,6 +8,7 @@ export default function EnquiriesPage({ data, user, reload }) {
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState("");
+  const [items, setItems] = useState([{ productId: "", quantity: "1" }]);
   const [customer, setCustomer] = useState({
     companyName: "",
     contactPerson: "",
@@ -27,6 +28,7 @@ export default function EnquiriesPage({ data, user, reload }) {
       setCustomers(customerData);
       setProducts(productData);
       setSelectedCustomerId(customerData[0]?.id || "");
+      setItems([{ productId: productData[0]?.id || "", quantity: "1" }]);
       setFormOpen(true);
       setError("");
     } catch (requestError) {
@@ -46,6 +48,14 @@ export default function EnquiriesPage({ data, user, reload }) {
 
   function updateCustomer(event) {
     setCustomer({ ...customer, [event.target.name]: event.target.value });
+  }
+
+  function updateItem(index, field, value) {
+    setItems((currentItems) =>
+      currentItems.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: value } : item,
+      ),
+    );
   }
 
   async function createCustomer() {
@@ -71,12 +81,10 @@ export default function EnquiriesPage({ data, user, reload }) {
         enquiryDate: form.get("enquiryDate"),
         requiredDate: form.get("requiredDate"),
         notes: form.get("notes"),
-        items: [
-          {
-            productId: form.get("productId"),
-            quantity: Number(form.get("quantity")),
-          },
-        ],
+        items: items.map((item) => ({
+          productId: item.productId,
+          quantity: Number(item.quantity),
+        })),
       });
       setFormOpen(false);
       reload();
@@ -117,17 +125,6 @@ export default function EnquiriesPage({ data, user, reload }) {
               <option value="add-customer">Add a customer...</option>
             </select>
           </label>
-          <label>
-            Product
-            <select name="productId" required>
-              {products.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.productCode} - {item.name}
-                </option>
-              ))}
-            </select>
-          </label>
-
           {customerFormOpen && (
             <div className="customer-create">
               <h3>Add customer</h3>
@@ -171,10 +168,56 @@ export default function EnquiriesPage({ data, user, reload }) {
             Required date
             <input name="requiredDate" type="date" required />
           </label>
-          <label>
-            Quantity
-            <input name="quantity" type="number" min="1" defaultValue="1" required />
-          </label>
+          <div className="enquiry-items">
+            <div className="enquiry-items-head">
+              <h3>Items</h3>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => setItems([...items, { productId: "", quantity: "1" }])}
+              >
+                Add item
+              </button>
+            </div>
+            {items.map((item, index) => (
+              <div className="enquiry-item" key={index}>
+                <label>
+                  Product
+                  <select
+                    value={item.productId}
+                    onChange={(event) => updateItem(index, "productId", event.target.value)}
+                    required
+                  >
+                    <option value="">Select a product</option>
+                    {products.map((product) => (
+                      <option key={product.id} value={product.id}>
+                        {product.productCode} - {product.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Quantity
+                  <input
+                    type="number"
+                    min="1"
+                    value={item.quantity}
+                    onChange={(event) => updateItem(index, "quantity", event.target.value)}
+                    required
+                  />
+                </label>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => setItems(items.filter((_, itemIndex) => itemIndex !== index))}
+                  disabled={items.length === 1}
+                  aria-label={`Remove item ${index + 1}`}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
           <label>
             Notes
             <input name="notes" placeholder="Optional requirement" />
