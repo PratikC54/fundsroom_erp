@@ -18,6 +18,6 @@ export async function login(req, res) {
   );
   res.json({
     token,
-    user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    user: { name: user.name, email: user.email, role: user.role },
   });
 }
